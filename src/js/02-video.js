@@ -18,11 +18,14 @@ function onPlay({
   localStorage.setItem(STORAGE_KEY, seconds);
 }
 
-setCurrentTime();
-
-function setCurrentTime() {
-  if (!localStorage.getItem(STORAGE_KEY)) {
-    return;
-  }
-  player.setCurrentTime(localStorage.getItem(STORAGE_KEY));
+if (player.setCurrentTime(localStorage.getItem(STORAGE_KEY)) || 0) {
+  return;
 }
+
+
+
+
+
+
+
+

@@ -5,7 +5,10 @@ const form = document.querySelector(".feedback-form");
 const emailInput = document.querySelector('[name="email"]');
 const message = document.querySelector('[name="message"]');
 const STORAGE_KEY = "feedback-form-state";
-const valueStorageObject = {};
+const formData = {
+  email: "",
+  message: "",
+};
 
 updateStorage();
 
@@ -13,23 +16,32 @@ form.addEventListener("submit", hendleOnSubmitForm);
 form.addEventListener("input", throttle(hendleOnInput, 500));
 
 function hendleOnInput(e) {
-  valueStorageObject[e.target.name] = e.target.value;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(valueStorageObject));
+  formData[e.target.name] = e.target.value;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
 }
 
 function hendleOnSubmitForm(e) {
+
+  if (emailInput.value === "" || message.value === "") {
+    alert("Заповніть поля!");
+    return;
+  }
   e.preventDefault();
+  e.currentTarget.reset();
   console.log(localStorage.getItem(STORAGE_KEY));
   localStorage.removeItem(STORAGE_KEY);
-  form.reset();
 }
 
 function updateStorage() {
-  const getItem = localStorage.getItem(STORAGE_KEY);
+  const getItem = JSON.parse(localStorage.getItem(STORAGE_KEY));
   if (getItem) {
-    const parseItem = JSON.parse(getItem);
-    emailInput.value = parseItem.message;
-    message.value = parseItem.email;
-  }
+    return;
+  } 
+  emailInput.value = getItem.message || "";
+  message.value = getItem.email || "";
+  formData.email = getItem.email || "";
+  formData.message = getItem.message || "";
 }
+
+
 
