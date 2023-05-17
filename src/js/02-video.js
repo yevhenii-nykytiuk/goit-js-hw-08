@@ -7,8 +7,12 @@ const vimeoVideo = document.getElementById("vimeo-player");
 const STORAGE_KEY = "videoplayer-current-time";
 
 
-const iframe = document.querySelector('iframe');
-const player = new Player(iframe);
+const iframe = document.querySelector('iframe'); 
+const player = new Player(iframe, {
+  loop: true,
+  fullscreen: true,
+  quality: '1080p',
+}); 
 
 player.on('timeupdate', throttle(onPlay, 1000));
 
@@ -18,9 +22,9 @@ function onPlay({
   localStorage.setItem(STORAGE_KEY, seconds);
 }
 
-if (player.setCurrentTime(localStorage.getItem(STORAGE_KEY)) || 0) {
-  return;
-}
+player.setCurrentTime(localStorage.getItem(STORAGE_KEY) || 0);
+
+
 
 
 
