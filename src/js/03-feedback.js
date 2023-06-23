@@ -2,49 +2,61 @@ import throttle from "lodash.throttle";
 
 const STORAGE_KEY = "feedback-form-state";
 
-const form = document.querySelector(".feedback-form");
-const message = document.querySelector('textarea[name="message"]');
-const emailInput = document.querySelector('input[name="email"]');
+const formOnSubmit = document.querySelector(".feedback-form");
 
 
+let objectData = {}
 
-const formData = {
-  email: '',
-  message: '',
-};
 
 updateStorage();
 
-form.addEventListener("input", throttle(hendleOnInput, 500));
-form.addEventListener("submit", hendleOnSubmitForm);
+formOnSubmit.addEventListener("input", throttle(hendleOnInput, 500));
+formOnSubmit.addEventListener("submit", hendleOnSubmitForm);
+
+
+function hendleOnInput(e) {
+
+  objectData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+
+  objectData[e.target.name] = e.target.value;
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(objectData));
+}
+
 
 function hendleOnSubmitForm(e) {
 
-  if (emailInput.value === "" || message.value === "") {
+  e.preventDefault();
+
+  let form = e.target.elements;
+
+  let email = form.email.value;
+  let message = form.message.value;
+
+  if (email === "" || message === "") {
     alert("Заповніть поля!");
     return;
   }
-  e.preventDefault();
-  localStorage.removeItem(STORAGE_KEY);
-  e.currentTarget.reset();
-  console.log(formData);
-}
 
-function hendleOnInput(e) {
-  formData[e.target.name] = e.target.value;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData)); 
+  e.currentTarget.reset();
+
+  console.log(objectData);
+
+  localStorage.removeItem(STORAGE_KEY);
 }
 
 function updateStorage() {
   const getItem = JSON.parse(localStorage.getItem(STORAGE_KEY));
-  if (getItem === null) {
+  if (!getItem) {
     return;
-  } 
-  emailInput.value = getItem.message || '';
-  message.value = getItem.email || '';
-  formData.email = getItem.email || '';
-  formData.message = getItem.message || ''; 
+  }
+
+  objectData = getItem;
+  
+  formOnSubmit.email.value = objectData.email || '';
+  formOnSubmit.message.value = objectData.message || '';
 }
+
 
 
 
